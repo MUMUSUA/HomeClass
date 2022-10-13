@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="FUDAO"
+  id="myeclipse.1631546547094"
+  context-root="/FUDAO"
+  j2ee-spec="5.0"
+  archive="FUDAO.war">
+  <attributes>
+    <attribute name="webrootdir" value="WebRoot" />
+  </attributes>
+</project-module>
+

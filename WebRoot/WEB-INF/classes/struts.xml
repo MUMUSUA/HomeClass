@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+"http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+<constant name="struts.objectFactory.spring.autoWire" value="name"></constant>
+<package name="struts2" extends="struts-default">
+<action name="Login" class="UserAction" method="login">
+<result name="error">/error.jsp</result>
+<result name="success">/Home.jsp</result>
+</action>
+<action name="Regist" class="UserAction" method="regist">
+<result name="error">/error.jsp</result>
+<result name="success">/Login.jsp</result>
+</action>
+
+<action name="Show" class="UserAction" method="show">
+<result name="error">/error.jsp</result>
+<result name="success">/Self.jsp</result>
+<result name="display">/UpInfo.jsp</result>
+</action>
+
+<action name="Update" class="UserAction" method="update">
+<result name="error">/error.jsp</result>
+<result name="success">/Self.jsp</result>
+</action>
+
+
+<action name="Delete" class="UserAction" method="delete">
+<result name="error">/error.jsp</result>
+<result name="success">/Login.jsp</result>
+</action>
+
+<action name="showTea" class="TeaAction" method="show">
+<result name="error">/error.jsp</result>
+<result name="success">/Teacher.jsp</result>
+</action>
+
+<action name="showCou" class="CouAction" method="show">
+<result name="error">/error.jsp</result>
+<result name="success">/PubClass.jsp</result>
+</action>
+
+<action name="findCourse" class="CouAction" method="findByCid">
+<result name="error">/error.jsp</result>
+<result name="success" type="redirectAction">showCou</result>
+</action>
+
+<action name="showUc" class="UcAction" method="show">
+<result name="fail" type="redirectAction">showCou</result>
+<result name="success">/showUc.jsp</result>
+<result name="success1">/upUc.jsp</result>
+</action>
+
+<action name="deleteUc" class="UcAction" method="delete">
+<result name="error">/error.jsp</result>
+<result name="success">/Home.jsp</result>
+</action>
+
+
+<action name="addUc" class="UcAction" method="save">
+<result name="error">/error.jsp</result>
+<result name="success" type="redirectAction">showCou</result>
+</action>
+</package>
+</struts>
+

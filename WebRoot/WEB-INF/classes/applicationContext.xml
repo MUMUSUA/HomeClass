@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<!-- 引入外部属性文件 -->
+	<context:property-placeholder location="classpath:jdbc.properties" />
+	<!-- 配置C3P0连接池: -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="${jdbc.driver}" />
+		<property name="jdbcUrl" value="${jdbc.url}" />
+		<property name="user" value="${jdbc.user}" />
+		<property name="password" value="${jdbc.password}" />
+	</bean>
+	<!-- Hibernate的相关信息 -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<!-- 注入连接池 -->
+		<property name="dataSource" ref="dataSource" />
+		<!-- 配置Hibernate的其他的属性 -->
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.connection.autocommit">false</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+			</props>
+		</property>
+		<!-- 配置Hibernate的映射文件 -->
+		<property name="mappingResources">
+			<list>
+				<value>com/ascent/po/UserInfo.hbm.xml</value>
+				<value>com/ascent/po/Teacher.hbm.xml</value>
+				<value>com/ascent/po/Course.hbm.xml</value>
+				<value>com/ascent/po/Uc.hbm.xml</value>
+				</list>
+		</property></bean>
+			<!-- 在Dao中使用hibernateTemplate -->
+	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+<bean id="usrDAO" class="com.ascent.dao.impl.UsrDAOImpl" >
+<property name="hibernateTemplate" ref="hibernateTemplate" />
+</bean>
+		
+
+<bean id="teaDAO" class="com.ascent.dao.impl.TeaDAOImpl" >
+<property name="hibernateTemplate" ref="hibernateTemplate" />
+</bean>
+		
+<bean id="couDAO" class="com.ascent.dao.impl.CouDAOImpl" >
+<property name="hibernateTemplate" ref="hibernateTemplate" />
+</bean>
+
+<bean id="ucDAO" class="com.ascent.dao.impl.UcDAOImpl" >
+<property name="hibernateTemplate" ref="hibernateTemplate" />
+</bean>
+
+
+
+
+	
+    <bean id="UserAction" class="com.ascent.struts2.action.UserAction" scope="prototype">
+    	<property name="usrService" ref="usrService"></property>
+    </bean>
+    
+     <bean id="TeaAction" class="com.ascent.struts2.action.TeaAction" scope="prototype">
+    	<property name="teaService" ref="teaService"></property>
+    </bean>
+    
+    <bean id="CouAction" class="com.ascent.struts2.action.CouAction" scope="prototype">
+    	<property name="couService" ref="couService"></property>
+    </bean>
+    
+        <bean id="UcAction" class="com.ascent.struts2.action.UcAction" scope="prototype">
+    	<property name="ucService" ref="ucService"></property>
+    </bean>
+    
+
+
+
+	<bean id="usrService"  class="com.ascent.service.impl.UsrServiceImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="usrDAO" ref="usrDAO"></property>
+	</bean>
+		
+	<bean id="teaService"  class="com.ascent.service.impl.TeaServiceImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="teaDAO" ref="teaDAO"></property>
+		</bean>
+		
+	<bean id="couService" 
+		class="com.ascent.service.impl.CouServiceImpl"
+		abstract="false" lazy-init="default" autowire="default">
+	    <property name="couDAO" ref="couDAO"></property>
+		</bean>
+		
+			<bean id="ucService" 
+		class="com.ascent.service.impl.UcServiceImpl"
+		abstract="false" lazy-init="default" autowire="default">
+	    <property name="ucDAO" ref="ucDAO"></property>
+		</bean>
+	
+	
+	
+		<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+		</bean>
+		
+		<bean id="transactionInterceptor" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+		<property name="transactionManager" ref="transactionManager"></property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="find*,get*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="save*,update*,delete*">PROPAGATION_REQUIRED</prop>
+			</props>
+		</property>
+		</bean>
+		
+		<bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+		<property name="beanNames">
+		<list>
+		<value>usrService</value>
+		<value>teaService</value>
+		<value>couService</value>
+		<value>ucService</value>
+	
+		</list>
+		</property>
+		<property name="interceptorNames">
+		<list>
+		<value>transactionInterceptor</value>
+		</list>
+		</property>
+		</bean>
+		</beans>
